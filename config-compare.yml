@@ -1,0 +1,19 @@
+- name: Configuration compliance checking playbook
+  hosts: all
+  vars:
+    ansible_user: !vault...
+    ansible_password: !vault...
+    config: file.cfg
+    os: ios
+    diff: intended
+  gather_facts: false
+  connection: network_cli
+
+  tasks:
+  - name: "Checking against golden config..."
+    ios_config:
+      diff_against: {{ intended }}
+      intended_config: "{{ lookup('file', '{{ config }}') }}"
+    become: yes
+    become_method: enable
+    when: ansible_network_os == '{{ os }}'
